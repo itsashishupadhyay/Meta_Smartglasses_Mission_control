@@ -1,0 +1,15 @@
+# Xcode
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+DerivedData/
+build/
+.DS_Store
+
+# Swift Package Manager
+.swiftpm/
+Package.resolved
+
+# Python model-conversion env / scratch (kept outside the app target)
+.venv-convert/
+tools/_build/

@@ -1,0 +1,44 @@
+# ============================ macOS ============================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+
+# ======================== Xcode / Swift ========================
+## User-specific state & build output (never commit these)
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+DerivedData/
+build/
+*.moved-aside
+*.hmap
+*.ipa
+*.app.dSYM.zip
+*.dSYM
+## Swift Package Manager local caches.
+## NOTE: the SHARED Package.resolved
+##   (Offline_Mission_Control.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved)
+## IS committed — it pins the Meta SDK version. Do NOT ignore it.
+.build/
+.swiftpm/xcode/package.xcworkspace/xcuserdata/
+
+# ===================== Meta DAT SDK clone ======================
+# Local reference clone of github.com/facebook/meta-wearables-dat-ios (~119 MB).
+# The app consumes it via Swift Package Manager (pinned in Package.resolved),
+# so the clone is NOT part of the repo — collaborators fetch the package in Xcode.
+meta-wearables-dat-ios/
+
+# ================== Python (model conversion) ==================
+.venv-convert/
+tools/_build/
+__pycache__/
+*.pyc
+*.pyo
+
+# ===================== Agent / local state =====================
+.claude/
+
+# ========================= Personal ===========================
+# Uncomment to keep the personal cue-card PDF out of the repo:
+# misison_cuecard/

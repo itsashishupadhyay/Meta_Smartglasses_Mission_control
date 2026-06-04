@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Mission Control</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+
+	<!-- URL scheme so the Meta AI app can call back after registration -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>offlinemissioncontrol</string>
+			</array>
+		</dict>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fb-viewapp</string>
+	</array>
+
+	<!-- ===== Meta Wearables Device Access Toolkit ===== -->
+	<key>MWDAT</key>
+	<dict>
+		<key>AppLinkURLScheme</key>
+		<string>offlinemissioncontrol://</string>
+		<!-- MetaAppID "0" enables Developer Mode. For production, replace with the
+		     MetaAppID and ClientToken generated in the Wearables Developer Center. -->
+		<key>MetaAppID</key>
+		<string>0</string>
+		<key>ClientToken</key>
+		<string></string>
+		<key>TeamID</key>
+		<string>$(DEVELOPMENT_TEAM)</string>
+		<!-- NOTE: DAMEnabled (Display mode) is intentionally NOT set — it disables the camera
+		     streaming Wi-Fi path (causes videoStreamingError). Re-add `DAMEnabled = true` only
+		     for a Display-HUD-focused build; camera streaming and Display mode are exclusive. -->
+	</dict>
+
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>processing</string>
+		<string>bluetooth-central</string>
+		<string>bluetooth-peripheral</string>
+		<string>external-accessory</string>
+	</array>
+	<key>UISupportedExternalAccessoryProtocols</key>
+	<array>
+		<string>com.meta.ar.wearable</string>
+	</array>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Connects to your Meta glasses to stream the camera and play audio.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Lets your phone find and connect to your glasses over Wi-Fi for higher-bandwidth streaming.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_bonjour._tcp</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Streams the glasses camera (or the phone camera as a mock device) for on-device object detection.</string>
+	<!-- ===== End Device Access Toolkit section ===== -->
+
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+	</dict>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+</dict>
+</plist>

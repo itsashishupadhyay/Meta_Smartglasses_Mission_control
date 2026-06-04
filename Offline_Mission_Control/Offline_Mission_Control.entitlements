@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)$(CFBundleIdentifier)</string>
+	</array>
+	<!-- ⚠️ PAID Apple Developer account ONLY. Personal/free teams cannot provision these.
+	     Required so the SDK can join the glasses' Wi-Fi hotspot for camera video streaming;
+	     without them the stream fails with StreamError.videoStreamingError.
+	     This file is currently NOT wired into the build (see tools/unpatch_entitlements.py).
+	     On a paid account, run tools/patch_entitlements.py to enable real-glasses streaming. -->
+	<key>com.apple.developer.networking.HotspotConfiguration</key>
+	<true/>
+	<key>com.apple.developer.networking.wifi-info</key>
+	<true/>
+</dict>
+</plist>
