@@ -12,34 +12,56 @@ struct ConnectView: View {
     var vm: MissionControlViewModel
 
     var body: some View {
-        VStack(spacing: 18) {
+        VStack(spacing: 22) {
             Spacer()
-            Image(systemName: "eyeglasses")
-                .font(.system(size: 64))
-                .foregroundStyle(.tint)
-            Text("Connect your Meta glasses")
-                .font(.title2.bold())
-            Text("Link this app to the Meta AI app to access the glasses camera. Make sure your glasses are paired and Developer Mode is enabled.")
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
 
-            Text("Status: \(vm.wearables.registrationLabel)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            ZStack {
+                Circle()
+                    .fill(Theme.accent.opacity(0.12))
+                    .frame(width: 132, height: 132)
+                Image(systemName: "eyeglasses")
+                    .font(.system(size: 58, weight: .light))
+                    .foregroundStyle(Theme.accent)
+                    .symbolRenderingMode(.hierarchical)
+            }
+
+            VStack(spacing: 10) {
+                Text("Connect your Meta glasses")
+                    .font(.title2.bold())
+                    .foregroundStyle(Theme.textPrimary)
+                Text("Link this app to the Meta AI app to access the glasses camera. Make sure your glasses are paired and Developer Mode is enabled.")
+                    .font(.callout)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(Theme.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, 8)
+
+            HStack(spacing: 8) {
+                Circle()
+                    .fill(vm.wearables.isConnecting ? Theme.warn : Theme.textTertiary)
+                    .frame(width: 7, height: 7)
+                Text(vm.wearables.registrationLabel)
+                    .font(.telemetry(12))
+                    .foregroundStyle(Theme.textSecondary)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 7)
+            .background(.ultraThinMaterial, in: Capsule())
+            .overlay(Capsule().strokeBorder(Theme.hairline, lineWidth: 1))
 
             Button {
                 vm.wearables.connect()
             } label: {
                 Label("Connect Glasses", systemImage: "link")
-                    .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
+            .buttonStyle(.missionProminent)
             .disabled(vm.wearables.isConnecting)
             .padding(.horizontal)
+            .padding(.top, 4)
+
             Spacer()
         }
-        .padding()
+        .padding(24)
     }
 }

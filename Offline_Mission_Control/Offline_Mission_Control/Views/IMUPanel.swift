@@ -13,33 +13,35 @@ struct IMUPanel: View {
 
     var body: some View {
         let sample = motion.sample
-        VStack(alignment: .leading, spacing: 8) {
-            Label("IMU · iPhone Core Motion", systemImage: "gyroscope")
-                .font(.headline)
+        VStack(alignment: .leading, spacing: 10) {
+            Text("iPhone Core Motion")
+                .font(.caption)
+                .foregroundStyle(Theme.textTertiary)
 
             if !motion.isAvailable {
                 Text("Device motion is unavailable on this device.")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.textTertiary)
             } else {
-                Grid(alignment: .leading, horizontalSpacing: 14, verticalSpacing: 4) {
-                    GridRow {
-                        Text("Attitude").bold()
-                        Text("R \(MotionService.deg(sample.roll))°  P \(MotionService.deg(sample.pitch))°  Y \(MotionService.deg(sample.yaw))°")
-                    }
-                    GridRow {
-                        Text("Rotation").bold()
-                        Text(format(sample.rotationRate))
-                    }
-                    GridRow {
-                        Text("Accel").bold()
-                        Text(format(sample.userAcceleration))
-                    }
+                Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 6) {
+                    row("Attitude", "R \(MotionService.deg(sample.roll))°  P \(MotionService.deg(sample.pitch))°  Y \(MotionService.deg(sample.yaw))°")
+                    row("Rotation", format(sample.rotationRate))
+                    row("Accel", format(sample.userAcceleration))
                 }
-                .font(.system(.caption, design: .monospaced))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func row(_ label: String, _ value: String) -> some View {
+        GridRow {
+            Text(label.uppercased())
+                .font(.telemetry(11, weight: .semibold))
+                .foregroundStyle(Theme.textTertiary)
+            Text(value)
+                .font(.telemetry(12))
+                .foregroundStyle(Theme.textPrimary)
+        }
     }
 
     private func format(_ vector: Vector3) -> String {

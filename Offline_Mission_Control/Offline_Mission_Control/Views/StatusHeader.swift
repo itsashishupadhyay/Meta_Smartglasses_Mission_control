@@ -2,7 +2,8 @@
 //  StatusHeader.swift
 //  Offline_Mission_Control
 //
-//  Compact status line: stream state + fps, device name, display capability, model status.
+//  A slim system-status strip: connected device, optional Display capability, and Core ML
+//  model state — rendered as compact translucent chips beneath the navigation bar.
 //
 
 import SwiftUI
@@ -11,44 +12,37 @@ struct StatusHeader: View {
     var vm: MissionControlViewModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 8) {
-                Circle()
-                    .fill(vm.isRunning ? Color.green : Color.gray)
-                    .frame(width: 10, height: 10)
-                Text(vm.statusText)
-                    .font(.subheadline.weight(.medium))
-                    .lineLimit(1)
-                Spacer()
-                if vm.isRunning {
-                    Text("\(Int(vm.fps)) fps")
-                        .font(.caption.monospaced())
-                        .foregroundStyle(.secondary)
-                }
+        HStack(spacing: 8) {
+            chip(icon: "eyeglasses", text: vm.wearables.primaryDeviceName ?? "No device", tint: Theme.textSecondary)
+            if vm.canUseHUD {
+                chip(icon: "sparkles.tv", text: "Display", tint: Theme.accent)
             }
-
-            HStack(spacing: 12) {
-                Label(vm.wearables.primaryDeviceName ?? "No device", systemImage: "eyeglasses")
-                if vm.canUseHUD {
-                    Label("Display", systemImage: "sparkles.tv").foregroundStyle(.blue)
-                }
-                modelBadge
-            }
-            .font(.caption)
-            .foregroundStyle(.secondary)
+            Spacer(minLength: 0)
+            modelChip
         }
     }
 
-    @ViewBuilder private var modelBadge: some View {
-        switch vm.detectorStatus {
-        case .ready:
-            Label("Model ready", systemImage: "checkmark.seal.fill").foregroundStyle(.green)
-        case .modelMissing:
-            Label("Model missing", systemImage: "exclamationmark.triangle.fill").foregroundStyle(.orange)
-        case .failed:
-            Label("Model error", systemImage: "xmark.octagon.fill").foregroundStyle(.red)
-        case .notLoaded:
-            Label("Loading model…", systemImage: "hourglass")
+    private var modelChip: some View {
+        let info: (icon: String, text: String, tint: Color) = {
+            switch vm.detectorStatus {
+            case .ready: ("checkmark.seal.fill", "Model ready", Theme.accentGreen)
+            case .modelMissing: ("exclamationmark.triangle.fill", "Model missing", Theme.warn)
+            case .failed: ("xmark.octagon.fill", "Model error", Theme.danger)
+            case .notLoaded: ("hourglass", "Loading model", Theme.textTertiary)
+            }
+        }()
+        return chip(icon: info.icon, text: info.text, tint: info.tint)
+    }
+
+    private func chip(icon: String, text: String, tint: Color) -> some View {
+        HStack(spacing: 5) {
+            Image(systemName: icon).font(.caption2.weight(.semibold))
+            Text(text).font(.caption.weight(.medium)).lineLimit(1)
         }
+        .foregroundStyle(tint)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(.ultraThinMaterial, in: Capsule())
+        .overlay(Capsule().strokeBorder(Theme.hairline, lineWidth: 1))
     }
 }

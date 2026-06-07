@@ -27,6 +27,8 @@ struct OnboardingView: View {
             Spacer()
         }
         .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .missionBackground()
         .animation(.easeInOut(duration: 0.25), value: model.step)
         .animation(.easeInOut(duration: 0.25), value: model.check)
     }
@@ -48,7 +50,7 @@ struct OnboardingView: View {
             message: "Real-time object detection on your Meta glasses. Let's grant a few permissions and verify the connection before we start."
         ) {
             Button("Get Started") { model.advance() }
-                .buttonStyle(.borderedProminent).controlSize(.large)
+                .buttonStyle(.missionProminent)
         }
     }
 
@@ -65,9 +67,9 @@ struct OnboardingView: View {
                       okText: "Local Network requested — tap Allow",
                       badText: "Local Network not requested yet")
             Button("Allow Local Network") { model.requestLocalNetwork() }
-                .buttonStyle(.bordered)
+                .buttonStyle(.missionSecondary)
             Button("Continue") { model.advance() }
-                .buttonStyle(.borderedProminent).controlSize(.large)
+                .buttonStyle(.missionProminent)
         }
     }
 
@@ -80,12 +82,12 @@ struct OnboardingView: View {
             if model.isRegistered {
                 StatusRow(ok: true, okText: "Connected to Meta AI", badText: "")
                 Button("Continue") { model.advance() }
-                    .buttonStyle(.borderedProminent).controlSize(.large)
+                    .buttonStyle(.missionProminent)
             } else {
                 Button(model.isConnecting ? "Connecting…" : "Connect Glasses") { model.connectMeta() }
-                    .buttonStyle(.borderedProminent).controlSize(.large)
+                    .buttonStyle(.missionProminent)
                     .disabled(model.isConnecting)
-                if model.isConnecting { ProgressView() }
+                if model.isConnecting { ProgressView().tint(Theme.accent) }
             }
         }
     }
@@ -99,12 +101,12 @@ struct OnboardingView: View {
             if model.cameraGranted {
                 StatusRow(ok: true, okText: "Camera access granted", badText: "")
                 Button("Continue") { model.advance() }
-                    .buttonStyle(.borderedProminent).controlSize(.large)
+                    .buttonStyle(.missionProminent)
             } else {
                 Button(model.cameraRequesting ? "Requesting…" : "Grant Camera Access") {
                     Task { await model.requestCamera() }
                 }
-                .buttonStyle(.borderedProminent).controlSize(.large)
+                .buttonStyle(.missionProminent)
                 .disabled(model.cameraRequesting)
             }
         }
@@ -119,20 +121,20 @@ struct OnboardingView: View {
             switch model.check {
             case .idle:
                 Button("Run Check") { Task { await model.runCheck() } }
-                    .buttonStyle(.borderedProminent).controlSize(.large)
+                    .buttonStyle(.missionProminent)
             case .running:
-                ProgressView("Checking connection…")
+                ProgressView("Checking connection…").tint(Theme.accent)
             case .passed:
                 StatusRow(ok: true, okText: "All systems go", badText: "")
                 Button("Enter Mission Control") { onComplete() }
-                    .buttonStyle(.borderedProminent).controlSize(.large)
+                    .buttonStyle(.missionProminent)
             case .failed(let message):
                 StatusRow(ok: false, okText: "", badText: message)
                 HStack(spacing: 12) {
                     Button("Retry") { Task { await model.runCheck() } }
-                        .buttonStyle(.bordered)
+                        .buttonStyle(.missionSecondary)
                     Button("Skip Anyway") { onComplete() }
-                        .buttonStyle(.borderedProminent)
+                        .buttonStyle(.missionProminent)
                 }
             }
         }
@@ -148,17 +150,23 @@ private struct StepScaffold<Controls: View>: View {
     @ViewBuilder var controls: Controls
 
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.system(size: 56))
-                .foregroundStyle(.tint)
-                .symbolRenderingMode(.hierarchical)
+        VStack(spacing: 18) {
+            ZStack {
+                Circle()
+                    .fill(Theme.accent.opacity(0.12))
+                    .frame(width: 116, height: 116)
+                Image(systemName: icon)
+                    .font(.system(size: 52, weight: .light))
+                    .foregroundStyle(Theme.accent)
+                    .symbolRenderingMode(.hierarchical)
+            }
             Text(title)
                 .font(.title.bold())
+                .foregroundStyle(Theme.textPrimary)
                 .multilineTextAlignment(.center)
             Text(message)
                 .font(.callout)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.textSecondary)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
             VStack(spacing: 12) { controls }
@@ -174,7 +182,7 @@ private struct StatusRow: View {
 
     var body: some View {
         Label(ok ? okText : badText, systemImage: ok ? "checkmark.circle.fill" : "exclamationmark.circle")
-            .foregroundStyle(ok ? Color.green : Color.orange)
+            .foregroundStyle(ok ? Theme.accentGreen : Theme.warn)
             .font(.subheadline)
             .multilineTextAlignment(.leading)
     }
@@ -188,7 +196,7 @@ private struct ProgressDots: View {
         HStack(spacing: 8) {
             ForEach(0..<total, id: \.self) { i in
                 Capsule()
-                    .fill(i <= index ? Color.accentColor : Color.secondary.opacity(0.3))
+                    .fill(i <= index ? Theme.accent : Color.white.opacity(0.18))
                     .frame(width: i == index ? 22 : 8, height: 8)
             }
         }

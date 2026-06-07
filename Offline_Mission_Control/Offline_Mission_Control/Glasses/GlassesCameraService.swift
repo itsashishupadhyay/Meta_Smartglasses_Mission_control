@@ -28,7 +28,8 @@ final class GlassesCameraService {
     private(set) var currentFrame: UIImage?
     private(set) var hasReceivedFirstFrame = false
 
-    /// Stream quality.
+    /// Stream quality. Applied on `start()`; change while running via `restart()`.
+    /// Video codec is fixed to RAW for the cleanest detection input.
     var resolution: StreamingResolution = .medium
     var frameRate: UInt = 15
 
@@ -154,6 +155,7 @@ final class GlassesCameraService {
 
     func stop() async {
         let activeStream = stream
+        let session = deviceSession
         stream = nil
         stateToken = nil
         frameToken = nil
@@ -161,11 +163,81 @@ final class GlassesCameraService {
         sessionErrorTask?.cancel()
         sessionErrorTask = nil
         await activeStream?.stop()
-        deviceSession?.stop()
+        if let session {
+            session.stop()
+            await waitForSessionStopped(session)
+        }
         deviceSession = nil
         currentFrame = nil
         hasReceivedFirstFrame = false
         status = .stopped
+    }
+
+    /// Applies new camera settings while running. Prefers swapping the *stream* in place on the
+    /// existing device session — this keeps the device's ActivityManager connection open and
+    /// avoids the "new session created too soon" rejection (ActivityManagerError) that bricks a
+    /// full teardown + recreate. Falls back to a full restart only if the in-place swap can't
+    /// resume streaming.
+    func restart() async {
+        if await reconfigureStreamInPlace() {
+            print("🟦 OMC: in-place reconfigure OK — streaming")
+            return
+        }
+        print("🟦 OMC: in-place reconfigure failed — falling back to full restart")
+        await stop()
+        // Generous settle: a full session teardown needs the device to release the camera
+        // activity before a new session is accepted (otherwise ActivityManagerError).
+        try? await Task.sleep(for: .milliseconds(2500))
+        await start()
+    }
+
+    /// Stops the current stream and adds a fresh one with the new config on the SAME session,
+    /// keeping the device session (and camera activity link) alive. Returns true once the new
+    /// stream is actually streaming; false (so the caller can fall back) if it can't.
+    private func reconfigureStreamInPlace() async -> Bool {
+        guard let session = deviceSession, session.state == .started else { return false }
+        print("🟦 OMC: reconfiguring stream in place — \(resolution), \(frameRate)fps")
+
+        // Stop & detach the current stream but leave the session running.
+        let oldStream = stream
+        stream = nil
+        stateToken = nil
+        frameToken = nil
+        errorToken = nil
+        await oldStream?.stop()
+
+        // Brief settle so the device releases the previous stream within the session.
+        try? await Task.sleep(for: .milliseconds(500))
+
+        let config = StreamConfiguration(videoCodec: .raw, resolution: resolution, frameRate: frameRate)
+        guard session.state == .started, let newStream = try? session.addStream(config: config) else {
+            print("🟦 OMC: addStream(reconfig) failed")
+            return false
+        }
+        stream = newStream
+        status = .waitingForDevice
+        setupListeners(for: newStream)
+        await newStream.start()
+
+        // Confirm frames actually resume (bounded ~4s); otherwise report failure.
+        var waited = 0
+        while waited < 40 {
+            if status == .streaming { return true }
+            if case .error = status { return false }
+            try? await Task.sleep(for: .milliseconds(100))
+            waited += 1
+        }
+        return status == .streaming
+    }
+
+    /// Polls until the device session reaches its terminal `.stopped` state (bounded to ~5s),
+    /// so a subsequent fresh session isn't created before the device has released this one.
+    private func waitForSessionStopped(_ session: DeviceSession) async {
+        var waited = 0
+        while session.state != .stopped && waited < 50 {
+            try? await Task.sleep(for: .milliseconds(100))
+            waited += 1
+        }
     }
 
     /// Verifies the Bluetooth control link by creating + starting a device session (no video

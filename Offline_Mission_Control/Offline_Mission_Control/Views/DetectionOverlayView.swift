@@ -27,14 +27,28 @@ struct DetectionOverlayView: View {
                         containerSize: geo.size
                     )
                 } else {
-                    ContentUnavailableView(
-                        "No camera feed",
-                        systemImage: "video.slash",
-                        description: Text("Start detection to stream the glasses camera.")
-                    )
-                    .frame(width: geo.size.width, height: geo.size.height)
+                    placeholder
+                        .frame(width: geo.size.width, height: geo.size.height)
                 }
             }
         }
+    }
+
+    private var placeholder: some View {
+        VStack(spacing: 14) {
+            Image(systemName: "viewfinder")
+                .font(.system(size: 44, weight: .light))
+                .foregroundStyle(Theme.textTertiary)
+            VStack(spacing: 4) {
+                Text("Camera feed inactive")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(Theme.textSecondary)
+                Text("Start detection to stream the glasses camera.")
+                    .font(.caption)
+                    .foregroundStyle(Theme.textTertiary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .padding(24)
     }
 }

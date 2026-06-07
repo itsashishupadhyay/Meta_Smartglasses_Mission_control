@@ -13,10 +13,14 @@ struct ContentView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var body: some View {
-        if hasCompletedOnboarding {
-            HomeView(vm: viewModel)
-        } else {
-            OnboardingView(vm: viewModel) { hasCompletedOnboarding = true }
+        Group {
+            if hasCompletedOnboarding {
+                HomeView(vm: viewModel)
+            } else {
+                OnboardingView(vm: viewModel) { hasCompletedOnboarding = true }
+            }
         }
+        .tint(Theme.accent)
+        .preferredColorScheme(.dark)
     }
 }

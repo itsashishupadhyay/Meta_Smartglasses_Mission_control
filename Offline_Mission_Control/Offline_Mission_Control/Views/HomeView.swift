@@ -3,13 +3,19 @@
 //  Offline_Mission_Control
 //
 //  Top-level screen. Shows the connect flow until registered, then the mission-control UI:
-//  live detection overlay, summary, controls, and IMU readout.
+//  system-status chips, the live camera stage, the detected-objects panel, primary controls,
+//  and a collapsible telemetry card. The two settings sheets are opened from the "hidden"
+//  on-stage / on-panel buttons.
 //
 
 import SwiftUI
 
 struct HomeView: View {
     var vm: MissionControlViewModel
+
+    @State private var showCameraSettings = false
+    @State private var showDetectionSettings = false
+    @State private var showTelemetry = false
 
     var body: some View {
         NavigationStack {
@@ -20,19 +26,31 @@ struct HomeView: View {
                     ConnectView(vm: vm)
                 }
             }
+            .missionBackground()
             .navigationTitle("Mission Control")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Theme.bg, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 if vm.wearables.isRegistered {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("Disconnect") { vm.wearables.disconnect() }
+                            .foregroundStyle(Theme.textSecondary)
                     }
                 }
             }
         }
+        .tint(Theme.accent)
         .task {
             LocalNetworkPermission.prompt()
             await vm.loadModel()
+        }
+        .sheet(isPresented: $showCameraSettings) {
+            CameraSettingsSheet(settings: vm.settings)
+        }
+        .sheet(isPresented: $showDetectionSettings) {
+            DetectionSettingsSheet(settings: vm.settings)
         }
         .alert(
             "Glasses error",
@@ -52,27 +70,31 @@ struct HomeView: View {
             VStack(spacing: 16) {
                 StatusHeader(vm: vm)
 
-                DetectionOverlayView(image: vm.currentFrame, detections: vm.detections)
-                    .aspectRatio(9.0 / 16.0, contentMode: .fit)
-                    .frame(maxWidth: .infinity)
-                    .background(Color.black)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                CameraStage(vm: vm) { showCameraSettings = true }
 
-                HStack {
-                    Image(systemName: "viewfinder")
-                    Text(vm.summaryLine).font(.callout.weight(.medium))
-                    Spacer()
-                }
-                .foregroundStyle(.primary)
+                DetectedObjectsPanel(vm: vm) { showDetectionSettings = true }
 
                 ControlsBar(vm: vm)
 
-                IMUPanel(motion: vm.motion)
-                    .padding()
-                    .background(.quaternary.opacity(0.4))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                telemetryCard
             }
-            .padding()
+            .padding(16)
         }
+        .scrollIndicators(.hidden)
+    }
+
+    private var telemetryCard: some View {
+        DisclosureGroup(isExpanded: $showTelemetry) {
+            IMUPanel(motion: vm.motion)
+                .padding(.top, 10)
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "gyroscope").font(.caption.weight(.semibold))
+                Text("TELEMETRY").font(.caption.weight(.semibold)).tracking(1.7)
+            }
+            .foregroundStyle(Theme.textTertiary)
+        }
+        .tint(Theme.accent)
+        .glassCard()
     }
 }
