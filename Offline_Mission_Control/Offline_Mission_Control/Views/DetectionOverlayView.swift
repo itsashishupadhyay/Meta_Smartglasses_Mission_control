@@ -3,8 +3,6 @@
 //  Offline_Mission_Control
 //
 //  The phone-side live view: the glasses camera frame with bounding boxes drawn on top.
-//  Shown in BOTH modes (it's the primary view for non-display glasses, and a monitor for
-//  display glasses).
 //
 
 import SwiftUI
@@ -12,6 +10,7 @@ import SwiftUI
 struct DetectionOverlayView: View {
     let image: UIImage?
     let detections: [Detection]
+    var highlightedLabels: Set<String> = []
 
     var body: some View {
         GeometryReader { geo in
@@ -24,7 +23,8 @@ struct DetectionOverlayView: View {
                     BoundingBoxLayer(
                         detections: detections,
                         imageSize: image.size,
-                        containerSize: geo.size
+                        containerSize: geo.size,
+                        highlightedLabels: highlightedLabels
                     )
                 } else {
                     placeholder

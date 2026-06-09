@@ -53,9 +53,13 @@
 		<string></string>
 		<key>TeamID</key>
 		<string>$(DEVELOPMENT_TEAM)</string>
-		<!-- NOTE: DAMEnabled (Display mode) is intentionally NOT set — it disables the camera
-		     streaming Wi-Fi path (causes videoStreamingError). Re-add `DAMEnabled = true` only
-		     for a Display-HUD-focused build; camera streaming and Display mode are exclusive. -->
+		<!-- DAMEnabled (Display mode) must stay FALSE. It is MUTUALLY EXCLUSIVE with camera streaming
+		     at the MODE level (not just link contention): with it true the camera videoStreamingErrors
+		     even with NO Display attached — CONFIRMED on Ray-Ban Display (2026-06-08), so a time-shared
+		     camera↔HUD context-switcher is impossible in SDK 0.7.0. The glasses get the leaderboard as a
+		     SPOKEN recap instead. (There is no runtime DAM toggle; usesDam is read once at configure().) -->
+		<key>DAMEnabled</key>
+		<false/>
 	</dict>
 
 	<key>UIBackgroundModes</key>
@@ -79,6 +83,10 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Streams the glasses camera (or the phone camera as a mock device) for on-device object detection.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Listens for your spoken procedure call-outs to confirm each step hands-free during Mission Logs.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Recognizes your spoken confirmations on-device to advance the mission checklist automatically.</string>
 	<!-- ===== End Device Access Toolkit section ===== -->
 
 	<key>UIApplicationSceneManifest</key>

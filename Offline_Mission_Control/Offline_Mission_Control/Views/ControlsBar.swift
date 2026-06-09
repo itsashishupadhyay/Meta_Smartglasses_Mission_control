@@ -2,9 +2,9 @@
 //  ControlsBar.swift
 //  Offline_Mission_Control
 //
-//  Primary actions: the prominent Start/Stop button plus audio and glasses-HUD toggles, with
-//  app-controllable speech transport (pause/resume/stop). Detection tuning (confidence, dwell)
-//  lives in the Detection settings sheet, opened from the objects panel.
+//  Primary actions: the prominent Start/Stop button plus the audio and glasses spoken-recap
+//  toggles, with app-controllable speech transport (pause/resume/stop). Detection tuning
+//  (confidence, dwell) lives in the Detection settings sheet, opened from the objects panel.
 //
 
 import SwiftUI
@@ -18,7 +18,7 @@ struct ControlsBar: View {
 
             HStack(spacing: 10) {
                 ToggleChip(isOn: $vm.audioEnabled, title: "Audio", systemImage: "speaker.wave.2.fill")
-                ToggleChip(isOn: $vm.hudEnabled, title: "Glasses HUD", systemImage: "eyeglasses", enabled: vm.canUseHUD)
+                ToggleChip(isOn: $vm.recapEnabled, title: "Glasses Recap", systemImage: "eyeglasses")
             }
 
             if vm.audioEnabled {

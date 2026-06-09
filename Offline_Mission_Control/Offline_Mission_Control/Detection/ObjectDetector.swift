@@ -28,7 +28,7 @@ enum DetectorStatus: Sendable, Equatable {
 
 actor ObjectDetector {
     /// Resource name of the compiled model in the app bundle (.mlpackage -> .mlmodelc).
-    private let modelResourceName: String
+    private var modelResourceName: String
     private var visionModel: VNCoreMLModel?
     private(set) var status: DetectorStatus = .notLoaded
 
@@ -41,6 +41,16 @@ actor ObjectDetector {
 
     func setConfidenceThreshold(_ value: Float) {
         confidenceThreshold = min(max(value, 0), 1)
+    }
+
+    /// Switch to a different bundled model and (re)load it. Returns the resulting status.
+    @discardableResult
+    func setModel(_ resourceName: String) -> DetectorStatus {
+        if resourceName == modelResourceName, case .ready = status { return status }
+        modelResourceName = resourceName
+        visionModel = nil
+        status = .notLoaded
+        return prepare()
     }
 
     /// Loads the Core ML model (idempotent). Returns the resulting status.

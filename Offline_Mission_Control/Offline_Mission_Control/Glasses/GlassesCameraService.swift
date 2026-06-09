@@ -26,7 +26,6 @@ final class GlassesCameraService {
 
     private(set) var status: Status = .idle
     private(set) var currentFrame: UIImage?
-    private(set) var hasReceivedFirstFrame = false
 
     /// Stream quality. Applied on `start()`; change while running via `restart()`.
     /// Video codec is fixed to RAW for the cleanest detection input.
@@ -35,9 +34,6 @@ final class GlassesCameraService {
 
     /// Async, MainActor-isolated frame sink set by the orchestrator.
     var onFrame: ((UIImage) async -> Void)?
-
-    /// True once the auto-selector has discovered an eligible (connected) device.
-    private(set) var hasActiveDevice = false
 
     @ObservationIgnored private let wearables: WearablesInterface
     @ObservationIgnored private let deviceSelector: AutoDeviceSelector
@@ -57,9 +53,7 @@ final class GlassesCameraService {
         // ready by the time the user starts streaming (avoids noEligibleDevice).
         deviceMonitorTask = Task { [weak self] in
             guard let selector = self?.deviceSelector else { return }
-            for await device in selector.activeDeviceStream() {
-                self?.hasActiveDevice = (device != nil)
-            }
+            for await _ in selector.activeDeviceStream() {}
         }
     }
 
@@ -169,7 +163,6 @@ final class GlassesCameraService {
         }
         deviceSession = nil
         currentFrame = nil
-        hasReceivedFirstFrame = false
         status = .stopped
     }
 
@@ -239,6 +232,7 @@ final class GlassesCameraService {
             waited += 1
         }
     }
+
 
     /// Verifies the Bluetooth control link by creating + starting a device session (no video
     /// stream), then stopping it. Returns nil on success or a message. Used by onboarding.
@@ -320,7 +314,6 @@ final class GlassesCameraService {
             print("🟦 OMC: frame #\(frameCount) \(Int(image.size.width))x\(Int(image.size.height))")
         }
         currentFrame = image
-        hasReceivedFirstFrame = true
         await onFrame?(image)
     }
 }

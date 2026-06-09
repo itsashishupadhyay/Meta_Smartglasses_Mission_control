@@ -95,4 +95,14 @@ final class SessionStatsTracker {
         let total = max(0, Int(time.rounded()))
         return String(format: "%02d:%02d", total / 60, total % 60)
     }
+
+    /// Natural-language duration for spoken output, e.g. "1 minute 20 seconds".
+    static func spokenDuration(_ time: TimeInterval) -> String {
+        let total = max(0, Int(time.rounded()))
+        let minutes = total / 60, seconds = total % 60
+        func plural(_ n: Int, _ unit: String) -> String { "\(n) \(unit)\(n == 1 ? "" : "s")" }
+        if minutes == 0 { return plural(seconds, "second") }
+        if seconds == 0 { return plural(minutes, "minute") }
+        return "\(plural(minutes, "minute")) \(plural(seconds, "second"))"
+    }
 }

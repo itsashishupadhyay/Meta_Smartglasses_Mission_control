@@ -16,8 +16,6 @@ import SwiftUI
 final class WearablesManager {
     private(set) var devices: [DeviceIdentifier]
     private(set) var registrationState: RegistrationState
-    /// True when at least one connected device can render to a Display (Ray-Ban Meta Display).
-    private(set) var hasDisplayCapableDevice: Bool = false
     var showError = false
     var errorMessage = ""
 
@@ -40,9 +38,6 @@ final class WearablesManager {
             guard let self else { return }
             for await devices in wearables.devicesStream() {
                 self.devices = devices
-                self.hasDisplayCapableDevice = devices.contains { id in
-                    wearables.deviceForIdentifier(id)?.supportsDisplay() == true
-                }
             }
         }
     }

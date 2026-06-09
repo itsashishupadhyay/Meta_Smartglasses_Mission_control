@@ -15,7 +15,9 @@ struct HomeView: View {
 
     @State private var showCameraSettings = false
     @State private var showDetectionSettings = false
+    @State private var showModelPicker = false
     @State private var showTelemetry = false
+    @State private var showMission = false
 
     var body: some View {
         NavigationStack {
@@ -52,6 +54,20 @@ struct HomeView: View {
         .sheet(isPresented: $showDetectionSettings) {
             DetectionSettingsSheet(settings: vm.settings)
         }
+        .sheet(isPresented: $showModelPicker) {
+            ModelSettingsSheet(settings: vm.settings)
+        }
+        .fullScreenCover(isPresented: $showMission) {
+            if vm.missionLogsActive {
+                MissionLogsView(vm: vm) {
+                    showMission = false
+                    vm.stopMissionLogs()
+                    Task { await vm.stop() }
+                }
+            } else {
+                MissionLogsEntryView(vm: vm) { showMission = false }
+            }
+        }
         .alert(
             "Glasses error",
             isPresented: Binding(
@@ -68,7 +84,7 @@ struct HomeView: View {
     private var missionControl: some View {
         ScrollView {
             VStack(spacing: 16) {
-                StatusHeader(vm: vm)
+                StatusHeader(vm: vm) { showModelPicker = true }
 
                 CameraStage(vm: vm) { showCameraSettings = true }
 
@@ -76,11 +92,35 @@ struct HomeView: View {
 
                 ControlsBar(vm: vm)
 
+                missionLogsEntry
+
                 telemetryCard
             }
             .padding(16)
         }
         .scrollIndicators(.hidden)
+    }
+
+    private var missionLogsEntry: some View {
+        Button { showMission = true } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "list.bullet.clipboard.fill")
+                    .font(.title3)
+                    .foregroundStyle(Theme.accent)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Start Mission Logs")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Theme.textPrimary)
+                    Text("Guided procedure — object cues + voice confirm")
+                        .font(.caption)
+                        .foregroundStyle(Theme.textTertiary)
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right").font(.caption).foregroundStyle(Theme.textTertiary)
+            }
+            .glassCard()
+        }
+        .buttonStyle(.plain)
     }
 
     private var telemetryCard: some View {

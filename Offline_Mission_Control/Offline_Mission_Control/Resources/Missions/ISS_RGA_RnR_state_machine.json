@@ -1,0 +1,394 @@
+{
+  "schema_version": "1.0",
+  "procedure": {
+    "id": "1.480",
+    "title": "Rate Gyro Assembly (RGA) — Remove & Replace",
+    "discipline": "ISS EVA SYS / FIN",
+    "classification": "RECONSTRUCTION / INSTRUCTIONAL — NOT FOR FLIGHT",
+    "worksite": "S0 truss, RGA-2 ORU bay",
+    "crew": "EV1 lead / EV2 assist (IV support)",
+    "est_total_time_min": 55,
+    "objective": "Remove failed RGA-2 ORU and install spare RGA from the EVA tool bag. RGA provides rate data to the GN&C MDM for attitude control. Capture torque values and connector-mate status; downlink via voice and helmet-cam.",
+    "source_document": "ISS_RGA_RnR_CueCard.pdf",
+    "warnings": [
+      "Verify RGA-2 RPCM channel OPEN (ground-confirmed) before breaking any connector. Do not actuate without GO from MCC-H.",
+      "Sharp-edge hazard on ORU guide rail — maintain glove awareness.",
+      "Track suit consumables; abort task at BINGO O2 call."
+    ]
+  },
+
+  "_comment": "DEMO PROXY MODEL: Real EVA hardware does not exist in the COCO-80 label set, so each physical item is mapped to the closest everyday COCO class the on-glasses YOLO detector can recognize. Showing the proxy object to the glasses is the trigger that confirms the step and advances the state machine, playing 'message_log' as TTS audio. coco_id is the 0-based YOLO class index for the standard COCO-80 set.",
+
+  "coco_proxy_legend": [
+    { "represents": "Crewmember (EV1 / EV2 / IV) — handoff & assist", "coco_class": "person",     "coco_id": 0  },
+    { "represents": "APFR portable foot restraint / work platform",   "coco_class": "chair",      "coco_id": 56 },
+    { "represents": "Safety tether / body restraint tether (BRT)",    "coco_class": "tie",        "coco_id": 27 },
+    { "represents": "EVA tool bag (ETB) / spare bolt & connector kit", "coco_class": "suitcase",   "coco_id": 28 },
+    { "represents": "MCC-H radio call / comm / camera photo-doc",      "coco_class": "cell phone", "coco_id": 67 },
+    { "represents": "RGA orbital replacement unit (ORU) box",          "coco_class": "microwave",  "coco_id": 68 },
+    { "represents": "PGT (Pistol Grip Tool) — pistol-grip power tool", "coco_class": "hair drier", "coco_id": 78 },
+    { "represents": "Power connector J1 (rotating-collar connector)",  "coco_class": "bottle",     "coco_id": 39 },
+    { "represents": "Data connector J2 (round receptacle)",            "coco_class": "cup",        "coco_id": 41 },
+    { "represents": "Dust cap / receptacle cover / WIF cap",           "coco_class": "bowl",       "coco_id": 45 },
+    { "represents": "Cue card / P/N label / checklist / log",          "coco_class": "book",       "coco_id": 73 },
+    { "represents": "Manual ratchet / contingency hand tool",          "coco_class": "scissors",   "coco_id": 76 }
+  ],
+
+  "start_state": "1.1",
+  "end_state": "DONE",
+
+  "states": [
+    {
+      "id": "1.1",
+      "type": "task",
+      "section": "1.0 Worksite Setup & Safety",
+      "task_name": "Translate to S0 RGA-2 bay and install foot restraint",
+      "crew": "EV1",
+      "object_trigger": [
+        { "coco_class": "chair", "coco_id": 56, "represents": "APFR foot restraint", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 4,
+      "expected_indication": "APFR locked; black-on-black alignment.",
+      "message_log": "Step 1.1. Translate to the S0 truss, RGA-2 bay. Install the portable foot restraint in receptacle S0-04 — pitch 3, roll Foxtrot, yaw 6. Confirm the foot restraint is locked with black-on-black alignment before you load it.",
+      "on_confirm": "1.2",
+      "on_anomaly": null
+    },
+    {
+      "id": "1.2",
+      "type": "task",
+      "section": "1.0 Worksite Setup & Safety",
+      "task_name": "Ingress foot restraint and configure tethers",
+      "crew": "EV1",
+      "object_trigger": [
+        { "coco_class": "tie", "coco_id": 27, "represents": "Safety / body restraint tether", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 3,
+      "expected_indication": "Two tethers verified — one structural, one local.",
+      "message_log": "Step 1.2. Ingress the foot restraint and shorten your tether to the worksite. Configure the body restraint tether for RGA mass. Verify two tethers — one structural, one local — before both hands go to work.",
+      "on_confirm": "1.3",
+      "on_anomaly": null
+    },
+    {
+      "id": "1.3",
+      "type": "task",
+      "section": "1.0 Worksite Setup & Safety",
+      "task_name": "Stage tool bag and retrieve spare RGA; verify part number",
+      "crew": "EV2",
+      "object_trigger": [
+        { "coco_class": "suitcase", "coco_id": 28, "represents": "EVA tool bag (ETB)", "confidence_min": 0.45 },
+        { "coco_class": "book", "coco_id": 73, "represents": "P/N label on ORU", "confidence_min": 0.40 }
+      ],
+      "approx_time_min": 3,
+      "expected_indication": "P/N matches: RGA-1F2 / S/N 1007.",
+      "message_log": "Step 1.3. Stage the tool bag at S0 handrail HR-0142. Retrieve the spare RGA and read the part number on the unit label. Confirm it matches RGA-1F2, serial 1007.",
+      "on_confirm": "1.4",
+      "on_anomaly": null
+    },
+    {
+      "id": "1.4",
+      "type": "gate",
+      "section": "1.0 Worksite Setup & Safety",
+      "task_name": "Call MCC-H — confirm RPCM open and GO for R&R",
+      "crew": "IV",
+      "object_trigger": [
+        { "coco_class": "cell phone", "coco_id": 67, "represents": "MCC-H radio call", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 2,
+      "expected_indication": "MCC-H: “You have a GO for RGA R&R.”",
+      "message_log": "Step 1.4. Call Houston. Confirm the RGA-2 power channel is open and the unit is power-isolated, then stand by for GO. Do not break any connector until you hear: you have a GO for RGA Remove and Replace.",
+      "on_confirm": "2.1",
+      "on_anomaly": null
+    },
+
+    {
+      "id": "2.1",
+      "type": "task",
+      "section": "2.0 Remove Failed RGA-2",
+      "task_name": "Demate power connector J1",
+      "crew": "EV1",
+      "object_trigger": [
+        { "coco_class": "bottle", "coco_id": 39, "represents": "Power connector J1", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 3,
+      "expected_indication": "Connector free; no pin damage. Stow on bib tether.",
+      "message_log": "Step 2.1. Warning — confirm Houston has given GO and the power channel is open before you touch a connector. Demate connector J1, the power connector. Rotate the collar counterclockwise about a quarter turn to soft-dock, then full-demate. Check for no pin damage and stow it on the bib tether.",
+      "on_confirm": "2.2",
+      "on_anomaly": null
+    },
+    {
+      "id": "2.2",
+      "type": "task",
+      "section": "2.0 Remove Failed RGA-2",
+      "task_name": "Demate data connector J2 and cap receptacle",
+      "crew": "EV1",
+      "object_trigger": [
+        { "coco_class": "cup", "coco_id": 41, "represents": "Data connector J2", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 3,
+      "expected_indication": "J2 free; dust cap installed on bay receptacle.",
+      "message_log": "Step 2.2. Demate connector J2, the data connector. Verify the backshell strain-relief is clear. Confirm J2 is free, then install the dust cap on the bay receptacle.",
+      "on_confirm": "2.3",
+      "on_anomaly": null
+    },
+    {
+      "id": "2.3",
+      "type": "task",
+      "section": "2.0 Remove Failed RGA-2",
+      "task_name": "Break four captive bolts with PGT",
+      "crew": "EV1",
+      "object_trigger": [
+        { "coco_class": "hair drier", "coco_id": 78, "represents": "PGT (Pistol Grip Tool)", "confidence_min": 0.40 }
+      ],
+      "approx_time_min": 5,
+      "expected_indication": "PGT reads 4 of 4 bolts backed out; white index paint visible on each bolt.",
+      "message_log": "Step 2.3. Set the pistol-grip tool to setting one, counterclockwise, torque 30 foot-pounds, 30 RPM. Back out the four captive bolts, B1 through B4, seven turns each. Confirm four of four bolts backed out with white index paint visible. Caution — if a bolt will not release, stop and do not exceed 38 foot-pounds.",
+      "on_confirm": "2.4",
+      "on_anomaly": "C2.3"
+    },
+    {
+      "id": "C2.3",
+      "type": "contingency",
+      "section": "2.0 Remove Failed RGA-2 — Contingency",
+      "task_name": "Contingency — bolt will not release",
+      "crew": "EV1",
+      "trigger_condition": "Step 2.3 assertion off-nominal: a captive bolt will not release.",
+      "object_trigger": [
+        { "coco_class": "scissors", "coco_id": 76, "represents": "Manual ratchet (backup hand tool)", "confidence_min": 0.40 }
+      ],
+      "approx_time_min": 6,
+      "expected_indication": "Bolt released via reseat/manual ratchet, OR escalation to MCC-H.",
+      "message_log": "Contingency — bolt will not release. Stop. Do not exceed 38 foot-pounds; that is bolt yield. Reseat the pistol-grip tool square on the bolt head and retry at 10 RPM. If still seized after two attempts, switch to the manual ratchet in eighth-turn increments. If more than one bolt is seized, call Houston, hold the task, and move to the get-ahead tasks while the ground assesses. Track your oxygen and abort at the BINGO call.",
+      "on_confirm": "2.4",
+      "on_anomaly": "5.1"
+    },
+    {
+      "id": "2.4",
+      "type": "task",
+      "section": "2.0 Remove Failed RGA-2",
+      "task_name": "Extract failed RGA-2 along guide rail",
+      "crew": "EV1",
+      "object_trigger": [
+        { "coco_class": "microwave", "coco_id": 68, "represents": "RGA-2 ORU box", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 3,
+      "expected_indication": "ORU clears bay without bind; rail witness marks aligned.",
+      "message_log": "Step 2.4. Grasp the RGA handhold and extract the unit along the guide rail in the plus-Z direction until it clears the bay. Mind the sharp edge on the guide rail. Confirm the unit clears without binding and the rail witness marks align.",
+      "on_confirm": "2.5",
+      "on_anomaly": null
+    },
+    {
+      "id": "2.5",
+      "type": "task",
+      "section": "2.0 Remove Failed RGA-2",
+      "task_name": "Hand off failed RGA-2 and log torque values",
+      "crew": "EV2",
+      "object_trigger": [
+        { "coco_class": "person", "coco_id": 0, "represents": "EV2 receiving crewmember", "confidence_min": 0.50 }
+      ],
+      "approx_time_min": 2,
+      "expected_indication": "Failed ORU restrained; logged. [GA] photo-doc connector pins.",
+      "message_log": "Step 2.5. Hand the failed RGA to EV2 for temporary stow on the tool bag. Record the bolt torque values for downlink. Confirm the failed unit is restrained and logged.",
+      "on_confirm": "3.1",
+      "on_anomaly": null
+    },
+
+    {
+      "id": "3.1",
+      "type": "task",
+      "section": "3.0 Install Spare RGA",
+      "task_name": "Take spare RGA and remove receptacle dust cap",
+      "crew": "EV1",
+      "object_trigger": [
+        { "coco_class": "bowl", "coco_id": 45, "represents": "Receptacle dust cap", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 2,
+      "expected_indication": "Cap stowed; receptacle clean, no FOD.",
+      "message_log": "Step 3.1. Take the spare RGA from EV2. Remove the receptacle dust cap and stow the cap on the tool bag. Confirm the receptacle is clean with no foreign object debris.",
+      "on_confirm": "3.2",
+      "on_anomaly": null
+    },
+    {
+      "id": "3.2",
+      "type": "task",
+      "section": "3.0 Install Spare RGA",
+      "task_name": "Align spare RGA on guide rail to soft-dock",
+      "crew": "EV1",
+      "object_trigger": [
+        { "coco_class": "microwave", "coco_id": 68, "represents": "Spare RGA ORU box", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 4,
+      "expected_indication": "ORU seated flush; index lines aligned within 1/8 in.",
+      "message_log": "Step 3.2. Align the spare on the guide rail and insert in the minus-Z direction until soft-dock. Verify the witness marks. Confirm the unit is seated flush with index lines aligned within one-eighth inch.",
+      "on_confirm": "3.3",
+      "on_anomaly": null
+    },
+    {
+      "id": "3.3",
+      "type": "task",
+      "section": "3.0 Install Spare RGA",
+      "task_name": "Drive four bolts to full seat (star pattern)",
+      "crew": "EV1",
+      "object_trigger": [
+        { "coco_class": "hair drier", "coco_id": 78, "represents": "PGT (Pistol Grip Tool)", "confidence_min": 0.40 }
+      ],
+      "approx_time_min": 5,
+      "expected_indication": "PGT 4 of 4 at target torque; audible/visual torque-out on each.",
+      "message_log": "Step 3.3. Set the pistol-grip tool to setting two, clockwise, torque 30 foot-pounds. Drive bolts B1 through B4 in a star pattern to full seat. Confirm four of four at target torque with an audible and visual torque-out on each.",
+      "on_confirm": "3.4",
+      "on_anomaly": null
+    },
+    {
+      "id": "3.4",
+      "type": "task",
+      "section": "3.0 Install Spare RGA",
+      "task_name": "Mate connectors J2 then J1",
+      "crew": "EV1",
+      "object_trigger": [
+        { "coco_class": "cup", "coco_id": 41, "represents": "Data connector J2 (mate first)", "confidence_min": 0.45 },
+        { "coco_class": "bottle", "coco_id": 39, "represents": "Power connector J1 (mate second)", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 3,
+      "expected_indication": "Both connectors mated; no gap at collar witness band.",
+      "message_log": "Step 3.4. Mate the data connector J2 first, then the power connector J1. Turn each collar clockwise to the hard stop and verify the backshell is flush. Confirm both connectors are mated with no gap at the collar witness band.",
+      "on_confirm": "3.5",
+      "on_anomaly": null
+    },
+    {
+      "id": "3.5",
+      "type": "gate",
+      "section": "3.0 Install Spare RGA",
+      "task_name": "Call MCC-H — ready for RPCM close and aliveness test",
+      "crew": "IV",
+      "object_trigger": [
+        { "coco_class": "cell phone", "coco_id": 67, "represents": "MCC-H radio call", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 2,
+      "expected_indication": "MCC-H: “RGA aliveness nominal, rate data good.”",
+      "message_log": "Step 3.5. Call Houston. Report ready for power channel close and aliveness test, and stand by on the connectors. Confirm when Houston calls: RGA aliveness nominal, rate data good.",
+      "on_confirm": "4.1",
+      "on_anomaly": null
+    },
+
+    {
+      "id": "4.1",
+      "type": "task",
+      "section": "4.0 Closeout",
+      "task_name": "Visually inspect ORU seat, connectors, and bolts",
+      "crew": "EV1",
+      "object_trigger": [
+        { "coco_class": "microwave", "coco_id": 68, "represents": "Installed RGA ORU (inspection)", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 3,
+      "expected_indication": "Worksite clean; bolts seated; no FOD released.",
+      "message_log": "Step 4.1. Visually inspect the unit seat, the connectors, and the bolts. Confirm no protruding hardware, the worksite is clean, and no foreign object debris was released.",
+      "on_confirm": "4.2",
+      "on_anomaly": null
+    },
+    {
+      "id": "4.2",
+      "type": "task",
+      "section": "4.0 Closeout",
+      "task_name": "Account for all tools — inventory to IV",
+      "crew": "EV1/EV2",
+      "object_trigger": [
+        { "coco_class": "suitcase", "coco_id": 28, "represents": "EVA tool bag (tool inventory)", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 3,
+      "expected_indication": "Tool count complete — matches egress manifest.",
+      "message_log": "Step 4.2. Account for all tools — pistol-grip tool, ratchet, caps, and tethers. Report the tool inventory to the intravehicular crew. Confirm the tool count matches the egress manifest.",
+      "on_confirm": "4.3",
+      "on_anomaly": null
+    },
+    {
+      "id": "4.3",
+      "type": "task",
+      "section": "4.0 Closeout",
+      "task_name": "Restrain failed RGA in tool bag and translate to airlock",
+      "crew": "EV2",
+      "object_trigger": [
+        { "coco_class": "microwave", "coco_id": 68, "represents": "Failed RGA ORU (return stow)", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 2,
+      "expected_indication": "Failed ORU secured for ingress; log entry complete.",
+      "message_log": "Step 4.3. Restrain the failed RGA in the tool bag for return and translate the bag toward the airlock. Confirm the failed unit is secured for ingress and the log entry is complete.",
+      "on_confirm": "DONE",
+      "on_anomaly": null
+    },
+
+    {
+      "id": "5.1",
+      "type": "get_ahead",
+      "section": "5.0 Get-Ahead Tasks [GA]",
+      "task_name": "Photo-document RGA-1 connector torque stripes",
+      "crew": "EV",
+      "optional": true,
+      "object_trigger": [
+        { "coco_class": "cell phone", "coco_id": 67, "represents": "Helmet-cam / photo documentation", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 4,
+      "expected_indication": "Torque stripes imaged for trend tracking.",
+      "message_log": "Get-ahead 5.1. Only if you are ahead of timeline. Photo-document the adjacent RGA-1 connector torque stripes for trend tracking.",
+      "on_confirm": "5.2",
+      "on_anomaly": null
+    },
+    {
+      "id": "5.2",
+      "type": "get_ahead",
+      "section": "5.0 Get-Ahead Tasks [GA]",
+      "task_name": "Image debris strikes on S0 handrails",
+      "crew": "EV",
+      "optional": true,
+      "object_trigger": [
+        { "coco_class": "cell phone", "coco_id": 67, "represents": "Helmet-cam / imaging", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 5,
+      "expected_indication": "Handrails HR-0140 thru HR-0145 imaged; MLI condition noted.",
+      "message_log": "Get-ahead 5.2. Image any debris strikes on S0 handrails HR-0140 through HR-0145, and note any frayed insulation.",
+      "on_confirm": "5.3",
+      "on_anomaly": null
+    },
+    {
+      "id": "5.3",
+      "type": "get_ahead",
+      "section": "5.0 Get-Ahead Tasks [GA]",
+      "task_name": "Verify tightness of WIF caps at S0-05/06",
+      "crew": "EV",
+      "optional": true,
+      "object_trigger": [
+        { "coco_class": "bowl", "coco_id": 45, "represents": "WIF cap", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 3,
+      "expected_indication": "WIF caps confirmed tight (prior-EVA open item closed).",
+      "message_log": "Get-ahead 5.3. Verify the tightness of the WIF caps at S0-05 and S0-06 — a prior EVA open item.",
+      "on_confirm": "5.4",
+      "on_anomaly": null
+    },
+    {
+      "id": "5.4",
+      "type": "get_ahead",
+      "section": "5.0 Get-Ahead Tasks [GA]",
+      "task_name": "Stage spare bolt/connector kit for next EVA",
+      "crew": "EV",
+      "optional": true,
+      "object_trigger": [
+        { "coco_class": "suitcase", "coco_id": 28, "represents": "Spare bolt/connector kit bag", "confidence_min": 0.45 }
+      ],
+      "approx_time_min": 4,
+      "expected_indication": "Kit staged at HR-0142 for next planned EVA.",
+      "message_log": "Get-ahead 5.4. Stage the spare bolt and connector kit at handrail HR-0142 for the next planned EVA.",
+      "on_confirm": "DONE",
+      "on_anomaly": null
+    },
+
+    {
+      "id": "DONE",
+      "type": "terminal",
+      "task_name": "Procedure complete",
+      "object_trigger": [],
+      "approx_time_min": 0,
+      "message_log": "RGA Remove and Replace complete. All tools accounted for, failed unit secured for return. Translate to the airlock for ingress.",
+      "on_confirm": null,
+      "on_anomaly": null
+    }
+  ]
+}

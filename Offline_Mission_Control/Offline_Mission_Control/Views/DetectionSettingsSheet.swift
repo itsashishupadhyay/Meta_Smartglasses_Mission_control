@@ -50,6 +50,17 @@ struct DetectionSettingsSheet: View {
                         minLabel: "1s",
                         maxLabel: "15s"
                     )
+
+                    SliderCard(
+                        title: "Recap Interval",
+                        blurb: "How often the glasses spoken recap fires — each one names the top objects with their time on screen, frame counts, and the mission timer.",
+                        valueText: "\(Int(settings.recapIntervalSeconds))s",
+                        value: $settings.recapIntervalSeconds,
+                        range: 5...60,
+                        step: 5,
+                        minLabel: "5s",
+                        maxLabel: "60s"
+                    )
                 }
                 .padding(20)
             }
@@ -80,44 +91,4 @@ struct DetectionSettingsSheet: View {
     }
 }
 
-/// A labelled slider in a glass card with a prominent monospaced value read-out.
-private struct SliderCard: View {
-    let title: String
-    let blurb: String
-    let valueText: String
-    @Binding var value: Double
-    let range: ClosedRange<Double>
-    let step: Double
-    let minLabel: String
-    let maxLabel: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(title: title) {
-                Text(valueText)
-                    .font(.telemetry(15, weight: .bold))
-                    .foregroundStyle(Theme.accent)
-                    .contentTransition(.numericText())
-                    .animation(.snappy, value: valueText)
-            }
-
-            Slider(value: $value, in: range, step: step)
-                .tint(Theme.accent)
-
-            HStack {
-                Text(minLabel)
-                Spacer()
-                Text(maxLabel)
-            }
-            .font(.telemetry(11))
-            .foregroundStyle(Theme.textTertiary)
-
-            Text(blurb)
-                .font(.caption)
-                .foregroundStyle(Theme.textTertiary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .glassCard()
-    }
-}
+// `SliderCard` is shared — see Views/SliderCard.swift.

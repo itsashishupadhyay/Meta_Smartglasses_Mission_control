@@ -36,6 +36,12 @@ __pycache__/
 *.pyc
 *.pyo
 
+# ============ Generated Core ML models (large) ============
+# Only the small default YOLOv8n is committed. The larger models exceed GitHub's file-size
+# limit (100 MB) — generate them locally with `tools/convert_models.py`.
+Offline_Mission_Control/Offline_Mission_Control/Resources/*.mlpackage/
+!Offline_Mission_Control/Offline_Mission_Control/Resources/YOLOv8n.mlpackage/
+
 # ===================== Agent / local state =====================
 .claude/
 
